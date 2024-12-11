@@ -8,6 +8,7 @@
     height: 100px;
     transform-style: preserve-3d;
     perspective: 1000px;
+    border-radius: 8px;
 }
 
 .front{
@@ -19,6 +20,7 @@
     display: grid;
     place-content: center;
     backface-visibility: hidden;
+    border-radius: 8px;
 }
 
 .back{
@@ -32,4 +34,5 @@
     place-content: center;
     backface-visibility: hidden;
     transform: rotateY(180deg);
+    border-radius: 8px;
 }
