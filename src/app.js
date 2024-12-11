@@ -13,48 +13,74 @@ export default function App() {
   }
 
   function flipLogic(index){
-    console.log(active);
 
-    //if already 2 active and new is flipped
-    if(!active.includes(index) && active.length >= maxActive){
-      console.log(1);
-      for(const i of active) flipCard(i);
+    if(isAnimating || over.includes(index) || gameOver) return;
+
+    setIsAnimating(true);
+
+    if(active.length === 0){
+      flipCard(index);
+      setActive(prevActive => [...prevActive, index])
+      setIsAnimating(false);
+    }
+
+    else if(active[0] === index){
+      setIsAnimating(false);
+      return;
+    } 
+
+    else if(letters[active[0]] === letters[index]){
+      setMoves(prevMoves => prevMoves+1);
+      flipCard(index);
+      setActive([]);
+      setIsAnimating(false);
+      setOver(prevOver => [...prevOver, index, active[0]]);
+
+      if(over.length >= 12) setGameOver(true);
+    }
+    
+    else{
+      setMoves(prevMoves => prevMoves+1);
+      flipCard(index, true);
       setTimeout(() => {
-        flipCard(index);
-      }, 200);
-      setActive([index]);
-    }
-
-    //if already flipped card is flipped
-    else if(active.includes(index)){
-      console.log(2);
-      flipCard(index);
-      const newActive = active.filter(i => i !== index);
-      setActive(newActive);
-    }
-
-    else if(!active.includes(index) && active.length < maxActive){
-      console.log(3);
-      flipCard(index);
-      setActive(prevActive => [...prevActive, index]);
+        active.forEach(i => flipCard(i));
+        setIsAnimating(false);
+      }, 1300);
+      setActive([]);
     }
   }
 
-  function flipCard(index){
-    gsap.to(`.card${index}`, {
-      rotateY: isFlipped[index]? "0": "180deg",
-      duration: 0.3,
-      overwrite: true
-    });
+  function flipCard(index, reverse=false){
+    if(reverse){
+      gsap.timeline()
+        .to(`.card${index}`,{
+          rotateY: "180deg",
+          duration: 0.3
+        })
+        .to(`.card${index}`, {
+          rotateY: "0",
+          delay: 1,
+          duration: 0.3
+        });
+    }
 
-    setIsFlipped((prevFlipped) => {
-      return prevFlipped.map((item, itemIndex) => {
-        if(itemIndex === index) return !item;
-        return item;
-      })
-    });
+    else{
+      gsap.to(`.card${index}`, {
+        rotateY: isFlipped[index]? "0": "180deg",
+        duration: 0.3,
+      });
+  
+      setIsFlipped((prevFlipped) => {
+        return prevFlipped.map((item, itemIndex) => {
+          if(itemIndex === index) return !item;
+          return item;
+        })
+      });
+    }
   }
 
+  const [gameOver, setGameOver] = React.useState(false);
+  const [over, setOver] = React.useState([]);
   const [letters, setLetters] = React.useState(
     shuffleArray(['A', 'A', 'B', 'B', 'C', 'C', 'D', 'D', 'E', 'E', 'F', 'F', 'G', 'G', 'H', 'H'])
   );
@@ -62,6 +88,8 @@ export default function App() {
     [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]
   );
   const [active, setActive] = React.useState([]);
+  const [isAnimating, setIsAnimating] = React.useState(false);
+  const [moves, setMoves] = React.useState(0);
   const maxActive = 2;
 
   const cards = letters.map((letter, index) => {

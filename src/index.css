@@ -4,8 +4,8 @@
 
 .card-container{
     position: relative;
-    width: 70px;
-    height: 100px;
+    width: 60px;
+    height: 60px;
     transform-style: preserve-3d;
     perspective: 1000px;
     border-radius: 8px;
