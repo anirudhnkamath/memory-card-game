@@ -8,7 +8,10 @@ export default function Timer(props) {
 
     if (props.start) {
       interval = setInterval(() => {
-        setSeconds((prev) => prev + 1);
+        setSeconds((prev) => {
+          props.setGlobalSeconds(prev+1)
+          return prev + 1;
+        });
       }, 1000);
     } else {
       clearInterval(interval);

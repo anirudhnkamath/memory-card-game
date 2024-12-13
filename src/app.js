@@ -5,7 +5,7 @@ import Scoreboard from './components/scoreboard';
 import Timer from './components/timer';
 
 export default function App() {
-  
+
   const colCount = 4;
   const [letters, setLetters] = React.useState(() => createArray(colCount));
   const [isFlipped, setIsFlipped] = React.useState(Array(colCount * colCount).fill(false));
@@ -15,6 +15,7 @@ export default function App() {
   const [moves, setMoves] = React.useState(0);
   const [gameOver, setGameOver] = React.useState(false);
   const [started, setStarted] = React.useState(false);
+  const [seconds, setSeconds] = React.useState(0);
 
   function flipCard(index, reverse = false) {
     if (reverse) {
@@ -70,10 +71,9 @@ export default function App() {
       setIsAnimating(false);
       setOver(prevOver => [...prevOver, index, active[0]]);
 
-      if (over.length >= colCount*colCount - 2) {
+      if (over.length >= colCount * colCount - 2) {
         setGameOver(true);
         setStarted(false);
-        console.log(moves+1);
       }
     }
 
@@ -85,7 +85,7 @@ export default function App() {
         setIsAnimating(false);
       }, 1300);
       setActive([]);
-    }    
+    }
   }
 
   function createArray(cols) {
@@ -102,6 +102,18 @@ export default function App() {
     return arr;
   }
 
+  function resetGame() {
+    setLetters(createArray(colCount));
+    setIsFlipped(Array(colCount * colCount).fill(false));
+    setActive([]);
+    setOver([]);
+    setIsAnimating(false);
+    setMoves(0);
+    setGameOver(false);
+    setStarted(false);
+    setSeconds(0);
+  }
+
   const cards = letters.map((letter, index) => (
     <Card
       key={index}
@@ -112,21 +124,47 @@ export default function App() {
   ));
 
   return (
-    <section className="flex justify-center items-center h-screen bg-whitesmoke flex flex-col gap-[1em]">
-      <section className='details w-[min(90vw,500px)] flex justify-center gap-4'>
-        <Scoreboard
-          total={colCount*colCount}
-          over={over.length}
-          className={`h-[100px] w-[100px] bg-lightblue rounded-[50%] grid place-content-center text-black text-2xl`}
-        />
-        <Timer start={started}/>
-      </section>
-      <section
-        className={`grid gap-[2%] text-white p-4 w-[min(90vw,500px)] h-[min(90vw,500px)]`}
-        style={{gridTemplateColumns: `repeat(${colCount},1fr)`, fontSize: colCount === 8? "1.5rem" : "2rem"}}
-      >
-        {cards}
-      </section>
+    <section>
+
+      {/* game */}
+
+      {
+        !gameOver && (
+          <section className="flex justify-center items-center h-screen bg-whitesmoke flex flex-col gap-[1em]">
+            <section className='details w-[min(90vw,500px)] flex justify-center gap-4'>
+              <Scoreboard
+                total={colCount * colCount}
+                over={over.length}
+                className={`h-[100px] w-[100px] bg-lightblue rounded-[50%] grid place-content-center text-black text-2xl`}
+              />
+              <Timer start={started} setGlobalSeconds={setSeconds} />
+            </section>
+            <section
+              className={`grid gap-[2%] text-white p-4 w-[min(90vw,500px)] h-[min(90vw,500px)]`}
+              style={{ gridTemplateColumns: `repeat(${colCount},1fr)`, fontSize: colCount === 8 ? "1.5rem" : "2rem" }}
+            >
+              {cards}
+            </section>
+          </section>
+        )
+      }
+
+
+      {/* results */}
+
+      {
+        gameOver && 
+         (
+          <div className='h-screen w-screen grid place-content-center bg-whitesmoke'>
+            <div className='flex flex-col items-center gap-8'>
+              <h1 className='text-4xl font-semibold'>Game Completed</h1>
+              <p className='text-2xl'>You made {moves} move{moves === 1 ? '' : "s"} in {seconds} seconds</p>
+              <button className='rounded-[50px] bg-lightblue h-[50px] w-[200px] text-xl' onClick={() => resetGame()}>Restart Game</button>
+            </div>
+          </div>
+        )
+      }
+
     </section>
   );
 }
