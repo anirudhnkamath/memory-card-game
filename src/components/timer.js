@@ -28,7 +28,7 @@ export default function Timer(props) {
   };
 
   return (
-    <section className='h-[100px] w-[200px] bg-lightblue rounded-[50px] grid place-content-center text-black text-2xl'>
+    <section className='h-[4em] w-[8em] bg-lightblue rounded-[50px] grid place-content-center text-black text-xl lg:text-2xl dark:bg-white'>
       {formatTime(seconds)}
     </section>
   );

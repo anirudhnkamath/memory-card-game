@@ -6,7 +6,7 @@ import Timer from './components/timer';
 
 export default function App() {
 
-  const colCount = 4;
+  const colCount = 6;
   const [letters, setLetters] = React.useState(() => createArray(colCount));
   const [isFlipped, setIsFlipped] = React.useState(Array(colCount * colCount).fill(false));
   const [active, setActive] = React.useState([]);
@@ -16,6 +16,7 @@ export default function App() {
   const [gameOver, setGameOver] = React.useState(false);
   const [started, setStarted] = React.useState(false);
   const [seconds, setSeconds] = React.useState(0);
+  const [isDark, setIsDark] = React.useState(true);
 
   function flipCard(index, reverse = false) {
     if (reverse) {
@@ -124,18 +125,18 @@ export default function App() {
   ));
 
   return (
-    <section>
+    <section className={isDark && `dark`}>
 
       {/* game */}
 
       {
         !gameOver && (
-          <section className="flex justify-center items-center h-screen bg-whitesmoke flex flex-col gap-[1em]">
-            <section className='details w-[min(90vw,500px)] flex justify-center gap-4'>
+          <section className="flex justify-center items-center h-screen bg-whitesmoke dark:bg-darkgray flex flex-col gap-[1em]">
+            <section className='details w-[min(90vw,500px)] flex justify-center items-center gap-4'>
               <Scoreboard
                 total={colCount * colCount}
                 over={over.length}
-                className={`h-[100px] w-[100px] bg-lightblue rounded-[50%] grid place-content-center text-black text-2xl`}
+                className={`h-[4em] w-[4em] bg-lightblue rounded-[50%] grid place-content-center text-black text-xl lg:text-2xl dark:bg-white`}
               />
               <Timer start={started} setGlobalSeconds={setSeconds} />
             </section>
@@ -144,6 +145,18 @@ export default function App() {
               style={{ gridTemplateColumns: `repeat(${colCount},1fr)`, fontSize: colCount === 8 ? "1.5rem" : "2rem" }}
             >
               {cards}
+            </section>
+            <section>
+                <button 
+                  className='h-[3em] w-[3em] p-[0.5em] grid place-content-center bg-[white] dark:bg-lightblue rounded-[2em] cursor-pointer'
+                  onClick={() => setIsDark(!isDark)}
+                >
+                {
+                  isDark
+                    ? <img src="/images/sun.svg"/>
+                    : <img src="/images/moon.svg"/>
+                }
+              </button>
             </section>
           </section>
         )
@@ -155,12 +168,24 @@ export default function App() {
       {
         gameOver && 
          (
-          <div className='h-screen w-screen grid place-content-center bg-whitesmoke'>
+          <div className='h-screen w-screen grid place-content-center bg-whitesmoke dark:bg-darkgray text-center dark:text-white gap-[1em]'>
             <div className='flex flex-col items-center gap-8'>
               <h1 className='text-4xl font-semibold'>Game Completed</h1>
               <p className='text-2xl'>You made {moves} move{moves === 1 ? '' : "s"} in {seconds} seconds</p>
-              <button className='rounded-[50px] bg-lightblue h-[50px] w-[200px] text-xl' onClick={() => resetGame()}>Restart Game</button>
+              <button className='rounded-[50px] bg-lightblue h-[50px] w-[200px] text-xl text-black' onClick={() => resetGame()}>Restart Game</button>
             </div>
+            <section className='grid place-content-center'>
+                <button 
+                  className='h-[3em] w-[3em] p-[0.5em] grid place-content-center bg-[white] dark:bg-lightblue rounded-[2em] cursor-pointer'
+                  onClick={() => setIsDark(!isDark)}
+                >
+                {
+                  isDark
+                    ? <img src="/images/sun.svg"/>
+                    : <img src="/images/moon.svg"/>
+                }
+              </button>
+            </section>
           </div>
         )
       }
